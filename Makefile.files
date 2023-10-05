@@ -1,0 +1,16 @@
+#
+# Include this file from your project Makefile and add the
+# variable HUGIN_SOURCES to the files that need compilation.
+#
+
+HUGIN_SOURCES = \
+	hugin.c \
+	hugin_syslog.c \
+	hugin_filter.c
+
+HUGIN_EXTRA_DIST = \
+	hugin.h \
+	hugin.hpp \
+	hugin_util.h \
+	hugin_filter.h \
+	hugin_syslog.h

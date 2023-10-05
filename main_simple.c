@@ -1,0 +1,76 @@
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set et sw=2 ts=2: */
+/***************************************************************************
+ *            main.cc
+ *
+ *  Fri Dec  7 09:35:45 CET 2012
+ *  Copyright 2012 Bent Bisballe Nyeng
+ *  deva@aasimon.org
+ ****************************************************************************/
+
+/*
+ *  This file is part of Hugin.
+ *
+ *  Hugin is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Hugin is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Hugin; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+ */
+#include "hugin.h"
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+
+int main(int argc, char *argv[])
+{
+  const char *mylog = "/tmp/my.log";
+  int fd = open(mylog, O_CREAT | O_RDWR, 0777);
+  if(fd == -1) {
+    printf("Could not open '%s' for writing: %s", mylog, strerror(errno));
+    return 1;
+  }
+
+  hug_status_t status = hug_init(HUG_FLAG_OUTPUT_TO_FILE |
+                                 HUG_FLAG_OUTPUT_TO_FD |
+                                 HUG_FLAG_OUTPUT_TO_STDOUT |
+                                 HUG_FLAG_OUTPUT_TO_STDERR |
+                                 0,
+                                 HUG_OPTION_FD, fd,
+                                 HUG_OPTION_FILENAME, "/tmp/my.log2",
+                                 HUG_OPTION_STDOUT_NO_DATE, 0,
+                                 HUG_OPTION_END);
+
+  if(status != HUG_STATUS_OK) {
+    printf("Error: %d\n", status);
+    return 1;
+  }
+
+  INFO(example, "We are up and running");
+
+  DEBUG(example, "Or are we %d %s?", 42, "hello");
+
+  const char bar[] = "bar";
+  (void)bar; // Ignore if compiled with hugin disabled.
+  DEBUG(foo, "Or are we %d %s?", 42, bar);
+  
+  hug_close();
+
+  unlink(mylog);
+  unlink("/tmp/my.log2");
+
+  return 0;
+}
