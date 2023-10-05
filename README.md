@@ -1,0 +1,2 @@
+# hugin
+Remote logging
